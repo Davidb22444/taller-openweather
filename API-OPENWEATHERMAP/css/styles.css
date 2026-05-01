@@ -1,0 +1,344 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2333;
+  --card: #1e2637;
+  --card2: #242f45;
+  --border: rgba(255, 255, 255, 0.07);
+  --accent: #4f9cf9;
+  --accent2: #7b61ff;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --success: #3fb950;
+  --warning: #d29922;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Outfit", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 60px;
+}
+
+/* CONTENEDOR */
+.contenedor {
+  width: 100%;
+  max-width: 1800px;
+}
+
+/* HEADER */
+h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.subtitulo {
+  color: var(--text2);
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* BUSCADOR */
+.buscador {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.buscador input {
+  flex: 1;
+  padding: 13px 18px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: var(--text);
+  font-family: "Outfit", sans-serif;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.buscador input::placeholder {
+  color: var(--text3);
+}
+.buscador input:focus {
+  border-color: var(--accent);
+}
+
+.buscador button {
+  padding: 13px 18px;
+  background: var(--bg2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.buscador button:hover {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+/* HISTORIAL */
+.historial {
+  margin-bottom: 20px;
+}
+
+.historial-titulo {
+  color: var(--text3);
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.chip {
+  display: inline-block;
+  background: var(--bg2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  margin: 3px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "DM Sans", sans-serif;
+}
+
+.chip:hover {
+  background: var(--card);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* LOADER */
+.loader {
+  text-align: center;
+  padding: 60px;
+  color: var(--text2);
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+  margin: 0 auto 14px;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* TARJETA PRINCIPAL */
+.tarjeta-principal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.ciudad-info h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.ciudad-info p {
+  color: var(--text2);
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  font-family: "DM Sans", sans-serif;
+}
+
+.clima-principal {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.clima-principal img {
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 0 16px rgba(79, 156, 249, 0.4));
+}
+
+.clima-principal span {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -3px;
+}
+
+#descripcion {
+  grid-column: 1 / -1;
+  color: var(--text2);
+  font-size: 0.95rem;
+  text-transform: capitalize;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  font-family: "DM Sans", sans-serif;
+}
+
+/* DATOS EXTRA */
+.datos-extra {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.dato {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: border 0.2s;
+}
+
+.dato:hover {
+  border-color: var(--accent);
+}
+
+.dato .icono {
+  font-size: 1.3rem;
+}
+
+.dato span:nth-child(2) {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dato small {
+  color: var(--text3);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* PRONÓSTICO */
+.titulo-pronostico {
+  color: var(--text2);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.pronostico {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.dia-pronostico {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 12px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.dia-pronostico:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  background: var(--card2);
+}
+
+.dia-nombre {
+  color: var(--text2);
+  font-weight: 500;
+  font-size: 0.82rem;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.dia-pronostico img {
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 0 8px rgba(79, 156, 249, 0.3));
+}
+
+.dia-temp {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-top: 6px;
+  letter-spacing: -0.5px;
+}
+
+.dia-desc {
+  color: var(--text3);
+  font-size: 0.72rem;
+  text-transform: capitalize;
+  margin-top: 4px;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* ERROR */
+.error {
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid rgba(248, 81, 73, 0.3);
+  color: #f85149;
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* OCULTO */
+.oculto {
+  display: none;
+}
+
+/* FONDO - sin animación */
+.fondo {
+  display: none;
+}
+.lluvia {
+  display: none;
+}
+.nubes {
+  display: none;
+}

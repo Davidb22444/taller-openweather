@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="fondo" id="fondo">
+      <div class="nubes">
+        <div class="nube nube1"></div>
+        <div class="nube nube2"></div>
+        <div class="nube nube3"></div>
+        <div class="nube nube4"></div>
+      </div>
+      <div class="lluvia" id="lluvia"></div>
+    </div>
+
+    <div class="contenedor">
+      <h1>🌤️</h1>
+      <p class="subtitulo">Consulta el clima de cualquier ciudad</p>
+
+      <div class="buscador">
+        <input
+          type="text"
+          id="ciudad"
+          placeholder="Ej: Bogota, London, Paris..."
+        />
+        <button onclick="buscarClima()">🔍</button>
+        <button onclick="usarUbicacion()" title="Usar mi ubicación">📍</button>
+      </div>
+
+      <div id="historial" class="historial"></div>
+
+      <div id="loader" class="loader oculto">
+        <div class="spinner"></div>
+        <p>Buscando clima...</p>
+      </div>
+
+      <div id="resultado" class="oculto">
+        <div class="tarjeta-principal">
+          <div class="ciudad-info">
+            <h2 id="nombre-ciudad"></h2>
+            <p id="fecha"></p>
+          </div>
+          <div class="clima-principal">
+            <img id="icono-clima" src="" alt="clima" />
+            <span id="temperatura"></span>
+          </div>
+          <p id="descripcion"></p>
+          <div class="datos-extra">
+            <div class="dato">
+              <span class="icono">🌡️</span>
+              <span id="sensacion"></span>
+              <small>Sensación</small>
+            </div>
+            <div class="dato">
+              <span class="icono">💧</span>
+              <span id="humedad"></span>
+              <small>Humedad</small>
+            </div>
+            <div class="dato">
+              <span class="icono">💨</span>
+              <span id="viento"></span>
+              <small>Viento</small>
+            </div>
+            <div class="dato">
+              <span class="icono">👁️</span>
+              <span id="visibilidad"></span>
+              <small>Visibilidad</small>
+            </div>
+            <div class="dato">
+              <span class="icono">📊</span>
+              <span id="presion"></span>
+              <small>Presión</small>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="titulo-pronostico">📅 Pronóstico 5 días</h3>
+        <div id="pronostico" class="pronostico"></div>
+      </div>
+
+      <div id="error" class="error oculto">
+        <p>❌ Ciudad no encontrada. Intenta de nuevo.</p>
+      </div>
+    </div>
+
+    <script>
+      let historial = JSON.parse(localStorage.getItem("historial")) || [];
+
+      function mostrarHistorial() {
+        const div = document.getElementById("historial");
+        if (historial.length === 0) {
+          div.innerHTML = "";
+          return;
+        }
+        div.innerHTML =
+          '<p class="historial-titulo">🕐 Búsquedas recientes:</p>' +
+          historial
+            .map(
+              (c) =>
+                `<span class="chip" onclick="buscarCiudad('${c}')">${c}</span>`,
+            )
+            .join("");
+      }
+
+      function agregarHistorial(ciudad) {
+        historial = [ciudad, ...historial.filter((c) => c !== ciudad)].slice(
+          0,
+          5,
+        );
+        localStorage.setItem("historial", JSON.stringify(historial));
+        mostrarHistorial();
+      }
+
+      async function buscarCiudad(ciudad) {
+        document.getElementById("ciudad").value = ciudad;
+        await buscarClima();
+      }
+
+      async function buscarClima() {
+        const ciudad = document.getElementById("ciudad").value.trim();
+        if (!ciudad) return;
+        await fetchClima(`http://localhost:3000?ciudad=${ciudad}`, ciudad);
+      }
+
+      async function usarUbicacion() {
+        if (!navigator.geolocation)
+          return alert("Tu navegador no soporta geolocalización");
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          await fetchClima(
+            `http://localhost:3000?lat=${latitude}&lon=${longitude}`,
+          );
+        });
+      }
+
+      async function fetchClima(url, ciudad = null) {
+        const loader = document.getElementById("loader");
+        const resultado = document.getElementById("resultado");
+        const error = document.getElementById("error");
+
+        resultado.classList.add("oculto");
+        error.classList.add("oculto");
+        loader.classList.remove("oculto");
+
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          loader.classList.add("oculto");
+
+          if (data.error || data.clima.cod !== 200) {
+            error.classList.remove("oculto");
+            return;
+          }
+
+          if (ciudad) agregarHistorial(ciudad);
+          mostrarClima(data.clima, data.pronostico);
+        } catch (err) {
+          loader.classList.add("oculto");
+          error.classList.remove("oculto");
+        }
+      }
+
+      function mostrarClima(clima, pronostico) {
+        const fondo = document.getElementById("fondo");
+        const lluvia = document.getElementById("lluvia");
+        const condicion = clima.weather[0].main.toLowerCase();
+
+        fondo.className = "fondo";
+        lluvia.innerHTML = "";
+
+        if (condicion.includes("rain") || condicion.includes("drizzle")) {
+          fondo.classList.add("fondo-lluvia");
+          for (let i = 0; i < 60; i++) {
+            const gota = document.createElement("div");
+            gota.className = "gota";
+            gota.style.left = Math.random() * 100 + "%";
+            gota.style.animationDelay = Math.random() * 2 + "s";
+            gota.style.animationDuration = Math.random() * 0.5 + 0.5 + "s";
+            lluvia.appendChild(gota);
+          }
+        } else if (condicion.includes("cloud")) {
+          fondo.classList.add("fondo-nublado");
+        } else if (condicion.includes("snow")) {
+          fondo.classList.add("fondo-nieve");
+        } else if (condicion.includes("thunder")) {
+          fondo.classList.add("fondo-tormenta");
+        } else {
+          const hora = new Date().getHours();
+          fondo.classList.add(
+            hora >= 6 && hora < 20 ? "fondo-sol" : "fondo-noche",
+          );
+        }
+
+        const fecha = new Date();
+        document.getElementById("fecha").innerText = fecha.toLocaleDateString(
+          "es-CO",
+          { weekday: "long", day: "numeric", month: "long" },
+        );
+        document.getElementById("nombre-ciudad").innerText =
+          `${clima.name}, ${clima.sys.country}`;
+        document.getElementById("icono-clima").src =
+          `https://openweathermap.org/img/wn/${clima.weather[0].icon}@2x.png`;
+        document.getElementById("temperatura").innerText =
+          `${Math.round(clima.main.temp)}°C`;
+        document.getElementById("descripcion").innerText =
+          clima.weather[0].description;
+        document.getElementById("sensacion").innerText =
+          `${Math.round(clima.main.feels_like)}°C`;
+        document.getElementById("humedad").innerText =
+          `${clima.main.humidity}%`;
+        document.getElementById("viento").innerText = `${clima.wind.speed} m/s`;
+        document.getElementById("visibilidad").innerText =
+          `${(clima.visibility / 1000).toFixed(1)} km`;
+        document.getElementById("presion").innerText =
+          `${clima.main.pressure} hPa`;
+
+        const diasVistos = {};
+        const pronosticoDiv = document.getElementById("pronostico");
+        pronosticoDiv.innerHTML = "";
+
+        pronostico.list.forEach((item) => {
+          const dia = new Date(item.dt * 1000).toLocaleDateString("es-CO", {
+            weekday: "short",
+            day: "numeric",
+          });
+          if (!diasVistos[dia] && Object.keys(diasVistos).length < 5) {
+            diasVistos[dia] = true;
+            pronosticoDiv.innerHTML += `
+            <div class="dia-pronostico">
+              <p class="dia-nombre">${dia}</p>
+              <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png" alt="${item.weather[0].description}" />
+              <p class="dia-temp">${Math.round(item.main.temp)}°C</p>
+              <p class="dia-desc">${item.weather[0].description}</p>
+            </div>`;
+          }
+        });
+
+        document.getElementById("resultado").classList.remove("oculto");
+      }
+
+      document.getElementById("ciudad").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") buscarClima();
+      });
+
+      mostrarHistorial();
+    </script>
+  </body>
+</html>
